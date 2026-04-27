@@ -116,9 +116,20 @@ class BaseClient:
             return []
 
     def _prepare_payload(self, method, url, body, headers):
+        profile = self.profile.copy()
+        
+        # Compatibility layer for integer TLSIDs
+        if isinstance(profile.get("TLSID"), int):
+            mapping = {
+                1: {"Client": "Chrome", "Version": "120"},
+                2: {"Client": "Firefox", "Version": "120"},
+                3: {"Client": "Safari", "Version": "16.0"}
+            }
+            profile["TLSID"] = mapping.get(profile["TLSID"], profile["TLSID"])
+
         return {
             "session_id": self.session_id,
-            "profile": self.profile,
+            "profile": profile,
             "url": url,
             "method": method,
             "headers": {**self.headers, **(headers or {})},
