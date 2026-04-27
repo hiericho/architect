@@ -1,50 +1,31 @@
-# 🏗️ Architect 
+# Architect
 
-> **"The Stealthy Network Chameleon"** 🦎  
-> *Surgical network fingerprinting for the modern web.*
+> A low-level network engine for precise browser fingerprint emulation.
 
-[![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat-square&logo=go)](https://github.com/Hiericho/architect)
-[![Python Version](https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square&logo=python)](https://github.com/Hiericho/architect)
-[![Asyncio Support](https://img.shields.io/badge/Asyncio-Supported-663399?style=flat-square&logo=python)](https://github.com/Hiericho/architect)
-[![PyPI Version](https://img.shields.io/pypi/v/architect-net.svg?style=flat-square)](https://pypi.org/project/architect-net/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://github.com/Hiericho/architect/blob/main/LICENSE)
-
-**Architect** is an elite low-level network engine designed to blend in perfectly. It surgically manipulates your network stack across every layer to produce TLS signatures, HTTP/2 frames, and TCP signatures that are indistinguishable from real browsers.
-
-Bypass enterprise-grade WAFs like **Cloudflare, Akamai, and DataDome** with ease. 🛡️✨
+Architect surgically manipulates the network stack across multiple layers to produce TLS signatures, HTTP/2 frames, and header ordering that are indistinguishable from real browsers — enabling it to pass inspection by enterprise-grade WAFs such as Cloudflare, Akamai, and DataDome.
 
 ---
 
-## 🧐 Why Architect?
+## How It Works
 
-Standard networking libraries (like Python's `requests` or Go's `net/http`) are easily flagged because they leave "digital fingerprints" at every layer. Architect wipes those fingerprints clean.
+Architect operates at three distinct layers of the network stack:
 
-### 🦎 The Stealth Stack:
-*   **Layer 3 (Network):** Spoofs **TTL** and **TCP Window Size** to match specific Operating Systems.
-*   **Layer 4 (Transport):** Uses **uTLS** for perfect **JA3/JA4** signatures and **Encrypted Client Hello (ECH)** to hide SNI.
-*   **Layer 7 (Application):** Wire-level **HTTP/2 Header Ordering** and frame manipulation to match browser behavior.
-*   **Behavioral:** Full **Cookie Session** persistence and TLS session resumption.
+| Layer | Scope | What Architect Does |
+|---|---|---|
+| **L3/L4 — Network/Transport** | TCP + TLS | TTL normalization and uTLS integration for accurate JA3/JA4 signatures |
+| **L4 — Security** | TLS Handshake | Automated Encrypted Client Hello (ECH) resolution via DNS-over-HTTPS (DoH) |
+| **L7 — Application** | HTTP/2 | Full control over SETTINGS frames and header ordering |
 
----
-
-## 🚀 Key Features
-
-- **⚡ High Performance:** Go-powered sidecar engine for surgical precision.
-- **🔄 Identity Rotation:** Switch fingerprints (Chrome, Safari, etc.) without restarting.
-- **🔌 Proxy Dominance:** Full SOCKS5 and HTTP proxy support with session isolation.
-- **⚡ Asyncio Native:** Designed for high-scale concurrency in Python.
-- **🔍 Deep Visibility:** Stream real-time engine logs to see exactly how handshakes are performing.
+A high-performance Go engine handles all low-level work. A clean Python API sits on top for easy integration.
 
 ---
 
-## 📦 Installation
+## Installation
 
-### 1. Build the Engine 🏗️
-Architect requires the Go sidecar to be compiled for your platform:
+### 1. Build the Go Engine
 
 ```bash
-# Cross-compiles for Windows, Linux, and macOS automatically
-python build.py
+go build -o architect/bin/architect_win_amd64.exe ./engine/main.go
 ```
 
 ### 2. Install Python Package 🐍
@@ -56,41 +37,26 @@ pip install architect-net
 
 ## 📖 Usage Examples
 
-### 🐍 Basic Async Session
+### Python
+
 ```python
 import asyncio
 import architect
 
-async def main():
-    # Maintains cookies & TLS state automatically!
-    session = architect.AsyncSession(architect.CHROME_124)
-    
-    # 🦎 Perfect emulation through a residential proxy
-    session.proxy = "socks5://user:pass@p.proxy.net:8000"
-    
-    response = await session.get("https://tls.peet.ws/api/all")
-    print(f"Bypassed! Status: {response.status_code} 🎉")
-    
-    # Peek at the digital wire:
-    for log in session.get_logs():
-        print(f"[ENGINE]: {log}")
-
-asyncio.run(main())
+client = architect.Client(architect.CHROME_124)
+response = client.get("https://tls.peet.ws/api/all")
+print(response.status_code)  # 200
 ```
 
-### 🧬 Dynamic Custom Profiles
-No need to recompile the Go engine. Define your own identity in pure Python:
+Browser identities can be rotated at runtime without restarting the engine.
 
-```python
-MY_IDENTITY = {
-    "ID": "custom_m1_mac",
-    "TLSID": 1,          # Chrome-based uTLS
-    "TTL": 64,           # MacOS TTL
-    "TCPWindow": 64240,  # MacOS Window Size
-    "UserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)..."
-}
+### Go
 
-client = architect.Client(profile=MY_IDENTITY)
+```go
+import "github.com/hiericho/architect"
+
+client := architect.NewClient(architect.Chrome124)
+resp, err := client.Get("https://tls.peet.ws/api/all")
 ```
 
 ---
@@ -99,12 +65,11 @@ client = architect.Client(profile=MY_IDENTITY)
 
 ```text
 architect/
-├── engine/         # ⚙️ Go Proxy Engine (The Brains)
-├── architect/      # 🐍 Python Package (The Beauty)
-│   └── bin/        # 📦 Cross-compiled Engine Binaries
-├── core/           # 🧩 Low-level protocol logic
-├── build.py        # 🏗️ Build automation
-└── README.md       # 📖 You are here!
+├── engine/         # Go network engine
+│   └── main.go
+├── architect/      # Python bindings
+│   └── bin/        # Compiled engine binaries
+└── README.md
 ```
 
 ---
