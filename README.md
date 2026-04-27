@@ -1,55 +1,52 @@
-# 🏗️ Architect 
+# 🏗️ Architect
 
-> **"The Stealthy Network Chameleon"** 🦎  
-> *Surgical network fingerprinting for the modern web.*
+> **"Advanced Network Fingerprint Research & Evasion Engine"** 🛡️  
+> *Surgical network stack analysis for security researchers and developers.*
 
 [![PyPI Version](https://img.shields.io/pypi/v/architect-net.svg?style=flat-square&color=blue)](https://pypi.org/project/architect-net/)
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat-square&logo=go)](https://github.com/Hiericho/architect)
 [![Python Version](https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square&logo=python)](https://github.com/Hiericho/architect)
-[![Asyncio Support](https://img.shields.io/badge/Asyncio-Supported-663399?style=flat-square&logo=python)](https://github.com/Hiericho/architect)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://github.com/Hiericho/architect/blob/main/LICENSE)
 
-**Architect** is an elite low-level network engine designed to blend in perfectly. It surgically manipulates your network stack across every layer to produce TLS signatures, HTTP/2 frames, and TCP signatures that are indistinguishable from real browsers.
+**Architect** is a high-performance network engine designed for security research and protocol analysis. It provides granular control over the entire network stack—from Layer 3 TCP/IP parameters to Layer 7 HTTP/2 frame ordering—enabling researchers to emulate various client environments and study network fingerprinting behaviors.
 
-Bypass enterprise-grade WAFs like **Cloudflare, Akamai, and DataDome** with ease. 🛡️✨
+Ideal for **Red Team operations, penetration testing, and verifying the robustness of WAF/IDS configurations**. 🔍✨
 
 ---
 
-## 🧐 Why Architect?
+## 🔬 Why Architect?
 
-Standard networking libraries (like Python's `requests` or Go's `net/http`) are easily flagged because they leave "digital fingerprints" at every layer. Architect wipes those fingerprints clean by running a high-performance Go sidecar that handles the raw protocol work.
+Most networking libraries (like Python's `requests` or Go's `net/http`) produce rigid, easily identifiable digital signatures. Architect allows for "protocol-level transparency," moving beyond default behaviors to provide a customizable sidecar engine that handles the low-level protocol handshake.
 
-### 🦎 The Stealth Stack:
-*   **Layer 3 (Network):** Spoofs **TTL** and **TCP Window Size** to match specific Operating Systems.
-*   **Layer 4 (Transport):** Uses **uTLS** for perfect **JA3/JA4** signatures and **Encrypted Client Hello (ECH)** to hide SNI.
-*   **Layer 7 (Application):** Wire-level **HTTP/2 Header Ordering** and frame manipulation to match browser behavior.
-*   **Behavioral:** Full **Cookie Session** persistence and TLS session resumption.
+### 🧩 The Research Stack:
+*   **Layer 3 (Network):** Analyze the impact of **TTL** and **TCP Window Size** on network identification.
+*   **Layer 4 (Transport):** Full **uTLS** implementation for studying **JA3/JA4** signatures and **Encrypted Client Hello (ECH)** adoption.
+*   **Layer 7 (Application):** Wire-level **HTTP/2 Header Normalization** and frame analysis to match specific browser implementations.
+*   **Stateful Analysis:** Built-in **Cookie Session** management and TLS session resumption testing.
 
 ---
 
 ## 🚀 Key Features
 
-- **⚡ Zero-Friction User Experience:** Just `pip install`. Pre-compiled binaries for Windows, Linux, and macOS are bundled in the wheel.
-- **⚡ Asyncio Native:** Designed for high-scale concurrency with `AsyncClient` and `AsyncSession`.
-- **🌐 Full HTTP Method Support:** Effortlessly execute `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, and `OPTIONS` requests.
-- **📦 Native JSON Support:** All responses include a `.json()` method for seamless data parsing.
-- **🔄 Identity Rotation:** Switch fingerprints (Chrome, Safari, etc.) or inject custom profiles on the fly.
-- **🔌 Proxy Dominance:** Full SOCKS5 and HTTP proxy support with isolated connection pools.
-- **🔍 Deep Visibility:** Stream real-time engine logs to see exactly how handshakes are performing.
+- **⚡ Professional Tooling:** Bundled cross-compiled Go sidecars. No Go installation required for Python users.
+- **⚡ High-Scale Concurrency:** Native `AsyncClient` and `AsyncSession` support for high-throughput testing.
+- **🌐 Full HTTP Method Support:** Native support for `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, and `OPTIONS`.
+- **🔄 Profile Management:** Rapidly switch between pre-defined client profiles (Chrome, Safari, etc.) or inject custom research parameters.
+- **🔌 Advanced Proxy Integration:** Robust SOCKS5 and HTTP proxy support with isolated connection pools.
+- **🔍 Diagnostic Logs:** Real-time logging to inspect handshake details and protocol transitions.
 
 ---
 
 ## 📦 Installation
 
-### The Easy Way (Users) 💅
+### Standard Installation 💅
 ```bash
 pip install architect-net
 ```
-*Architect bundles pre-compiled Go binaries—no Go installation required!*
 
-### Building from Source 🏗️
+### Development Setup 🏗️
 ```bash
-# 1. Clone and compile the engine sidecars
+# 1. Clone and compile the sidecar engine
 python scripts/build_engine.py
 
 # 2. Install in editable mode
@@ -60,80 +57,52 @@ pip install -e .
 
 ## 📖 Usage Examples
 
-### 🐍 Basic Async Session
+### 🧪 Client Emulation (Async)
 ```python
 import asyncio
 import architect
 
-async def main():
-    # Maintains cookies & TLS state automatically!
+async def analyze_fingerprint():
+    # Emulate a modern browser environment
     session = architect.AsyncSession(architect.CHROME_124)
     
-    # 🦎 Perfect emulation through a residential proxy
+    # Route through a diagnostic proxy if needed
     session.proxy = "socks5://user:pass@p.proxy.net:8000"
     
+    # Analyze how the target sees your fingerprint
     response = await session.get("https://tls.peet.ws/api/all")
-    print(f"Bypassed! Status: {response.status_code} 🎉")
+    print(f"Status: {response.status_code}")
     
-    # Direct JSON access
+    # Inspect the protocol details
     data = response.json()
-    print(f"JA3 Hash: {data['tls']['ja3_hash']}")
-    
-    # Peek at the digital wire:
-    for log in session.get_logs():
-        print(f"[ENGINE]: {log}")
+    print(f"JA3 Signature: {data['tls']['ja3_hash']}")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(analyze_fingerprint())
 ```
 
-### 🧬 Dynamic Custom Profiles
-Define your own identity in pure Python. Architect supports both dictionary-based `TLSID` and legacy integer IDs for backward compatibility:
+### 🧬 Custom Protocol Profiling
+Define specific network parameters for testing:
 
 ```python
-MY_IDENTITY = {
-    "ID": "custom_win_chrome",
-    "TLSID": 1,          # Maps to Chrome 120 automatically
-    "TTL": 128,          # Windows TTL
-    "TCPWindow": 65535,  # Windows Window Size
+RESEARCH_PROFILE = {
+    "ID": "win_10_research",
+    "TLSID": 1,          # Maps to Chrome TLS fingerprint
+    "TTL": 128,          # Windows-standard TTL
+    "TCPWindow": 65535,
     "UserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)..."
 }
 
-# Note: Use AsyncClient within async functions!
-async def run():
-    client = architect.AsyncClient(profile=MY_IDENTITY)
+async def run_test():
+    client = architect.AsyncClient(profile=RESEARCH_PROFILE)
     response = await client.get("https://tls.peet.ws/api/all")
     print(response.json())
 ```
 
-### 🐹 Go (Pure Performance)
-```go
-import "github.com/hiericho/architect/core"
-
-func main() {
-    client := architect.NewClient(architect.Chrome124)
-    resp, _ := client.Get("https://tls.peet.ws/api/all")
-}
-```
-
 ---
 
-## 📂 Project Structure
-
-```text
-architect/
-├── engine/         # ⚙️ Go Proxy Engine (Sidecar Source)
-├── architect/      # 🐍 Python Package (Public API)
-│   └── bin/        # 📦 Bundled Cross-compiled Engine Binaries
-├── scripts/        # 🏗️ Build and automation scripts
-├── core/           # 🧩 Core Go Logic
-└── README.md       # 📖 You are here!
-```
+## 📜 Ethical Use & Disclaimer
+Architect is a tool for **authorized security testing and educational research only**. It is designed to help professionals understand and secure network protocols. The authors do not condone or support unauthorized access or malicious use of this software.
 
 ---
-
-## 📜 Disclaimer
-Architect is intended for **educational use and authorized security testing only**. Don't be a mean chameleon! The authors assume no liability for misuse. 
-
----
-*Made with ❤️ by Hiericho*
+*Maintained with integrity by Hiericho*
