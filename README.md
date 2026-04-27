@@ -1,88 +1,94 @@
-# Architect
+# 🏗️ Architect 
 
-> A low-level network engine for precise browser fingerprint emulation.
+> **"The Stealthy Network Chameleon"** 🦎  
+> *Surgical network fingerprinting for the modern web.*
 
-Architect surgically manipulates the network stack across multiple layers to produce TLS signatures, HTTP/2 frames, and header ordering that are indistinguishable from real browsers — enabling it to pass inspection by enterprise-grade WAFs such as Cloudflare, Akamai, and DataDome.
+[![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat-square&logo=go)](https://go.dev/)
+[![Python Version](https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square&logo=python)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
----
+**Architect** is a low-level network engine that helps you blend in. It surgically manipulates your network stack across multiple layers to produce TLS signatures, HTTP/2 frames, and header ordering that are indistinguishable from real browsers.
 
-## How It Works
-
-Architect operates at three distinct layers of the network stack:
-
-| Layer | Scope | What Architect Does |
-|---|---|---|
-| **L3/L4 — Network/Transport** | TCP + TLS | TTL normalization and uTLS integration for accurate JA3/JA4 signatures |
-| **L4 — Security** | TLS Handshake | Automated Encrypted Client Hello (ECH) resolution via DNS-over-HTTPS (DoH) |
-| **L7 — Application** | HTTP/2 | Full control over SETTINGS frames and header ordering |
-
-A high-performance Go engine handles all low-level work. A clean Python API sits on top for easy integration.
+Say goodbye to "Access Denied" from Cloudflare, Akamai, and DataDome. 🛡️✨
 
 ---
 
-## Installation
+## 🛠️ How the Magic Happens
 
-### 1. Build the Go Engine
+Architect handles the heavy lifting at three critical layers of the stack:
+
+| Layer | Scope | The Architect Touch |
+| :--- | :--- | :--- |
+| **L3/L4** | **TCP + TLS** | 🦎 **Cloaking:** TTL normalization & uTLS for perfect JA3/JA4 signatures. |
+| **L4** | **Security** | 🔐 **Secret Handshake:** Automated Encrypted Client Hello (ECH) via DoH. |
+| **L7** | **Application** | ✉️ **Perfect Delivery:** Full control over H2 SETTINGS & Header ordering. |
+
+A high-performance **Go engine** handles the surgical precision, while a **clean Python API** keeps your code looking beautiful. 💅
+
+---
+
+## 🚀 Getting Started
+
+### 1. Build the Engine 🏗️
+Architect uses a background proxy to do the heavy lifting. Compile it for your platform:
 
 ```bash
+# Windows
 go build -o architect/bin/architect_win_amd64.exe ./engine/main.go
+
+# Linux
+go build -o architect/bin/architect_linux_amd64 ./engine/main.go
 ```
 
-### 2. Install the Python Package
-
+### 2. Install Python Package 🐍
 ```bash
 pip install -e .
 ```
 
-> **Requirements:** Go 1.21+ and Python 3.9+
-
 ---
 
-## Usage
+## 📖 Usage Examples
 
-### Python
-
+### 🐍 Python (Simple & Sweet)
 ```python
 import architect
 
+# Just pick a profile and go! 
 client = architect.Client(architect.CHROME_124)
+
+# Architect handles the background engine lifecycle automatically ✨
 response = client.get("https://tls.peet.ws/api/all")
-print(response.status_code)  # 200
+
+print(f"Status: {response.status_code} - We are in! 🎉")
 ```
 
-Browser identities can be rotated at runtime without restarting the engine.
-
-### Go
-
+### 🐹 Go (Pure Performance)
 ```go
 import "github.com/hiericho/architect"
 
-client := architect.NewClient(architect.Chrome124)
-resp, err := client.Get("https://tls.peet.ws/api/all")
+func main() {
+    client := architect.NewClient(architect.Chrome124)
+    resp, _ := client.Get("https://tls.peet.ws/api/all")
+}
 ```
 
 ---
 
-## Supported Profiles
+## 📂 Project Structure
 
-- `CHROME_124` / `Chrome124`
-- *(additional profiles go here)*
-
----
-
-## Project Structure
-
-```
+```text
 architect/
-├── engine/         # Go network engine
-│   └── main.go
-├── architect/      # Python bindings
-│   └── bin/        # Compiled engine binaries
-└── README.md
+├── engine/         # ⚙️ Go Proxy Engine (The Brains)
+├── architect/      # 🐍 Python Package (The Beauty)
+│   └── bin/        # 📦 Compiled Binaries
+├── core/           # 🧩 Go Library Logic
+└── README.md       # 📖 You are here!
 ```
 
 ---
 
-## Disclaimer
+## 📜 Disclaimer
+Architect is intended for **educational use and authorized security testing only**. Don't be a mean chameleon! The authors assume no liability for misuse. 
 
-Architect is intended for **educational use and authorized security testing only**. Do not use it against systems you do not own or have explicit permission to test. The authors assume no liability for misuse.
+---
+*Made with ❤️ by Hiericho*
