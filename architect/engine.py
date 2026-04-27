@@ -20,6 +20,20 @@ CHROME_124 = {
     "TCPWindow": 64240,
     "UserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
     "PseudoHeaderOrder": [":method", ":authority", ":scheme", ":path"],
+    "HeaderOrder": [
+        "sec-ch-ua",
+        "sec-ch-ua-mobile",
+        "sec-ch-ua-platform",
+        "upgrade-insecure-requests",
+        "user-agent",
+        "accept",
+        "sec-fetch-site",
+        "sec-fetch-mode",
+        "sec-fetch-user",
+        "sec-fetch-dest",
+        "accept-encoding",
+        "accept-language",
+    ],
 }
 
 SAFARI_17 = {
@@ -31,6 +45,13 @@ SAFARI_17 = {
     "TCPWindow": 65535,
     "UserAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1",
     "PseudoHeaderOrder": [":method", ":scheme", ":path", ":authority"],
+    "HeaderOrder": [
+        "user-agent",
+        "accept",
+        "accept-language",
+        "accept-encoding",
+        "connection",
+    ],
 }
 
 class Response:

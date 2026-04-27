@@ -191,18 +191,48 @@ func (c *h2Conn) Write(b []byte) (n int, err error) {
 		}
 	})
 
-	if c.preface && len(b) > 9 {
-		frameType := b[3]
-		if frameType == 0x1 { // HEADERS
-			newFrame, err := c.processHeadersFrame(b)
-			if err == nil {
-				_, err = c.Conn.Write(newFrame)
-				return len(b), err
-			}
-		}
+	if !c.preface || len(b) <= 9 {
+		return c.Conn.Write(b)
 	}
 
-	return c.Conn.Write(b)
+	var result bytes.Buffer
+	offset := 0
+	
+	// Handle HTTP/2 Preface if it's in this buffer
+	if string(b[:24]) == "PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n" {
+		result.Write(b[:24])
+		offset = 24
+	}
+
+	for offset+9 <= len(b) {
+		length := int(binary.BigEndian.Uint32(append([]byte{0}, b[offset:offset+3]...)))
+		frameEnd := offset + 9 + length
+		if frameEnd > len(b) {
+			// Fragmented frame, stop processing and write remainder as is
+			break
+		}
+
+		frameType := b[offset+3]
+		if frameType == 0x1 { // HEADERS
+			newFrame, err := c.processHeadersFrame(b[offset:frameEnd])
+			if err == nil {
+				result.Write(newFrame)
+			} else {
+				result.Write(b[offset:frameEnd])
+			}
+		} else {
+			result.Write(b[offset:frameEnd])
+		}
+		offset = frameEnd
+	}
+
+	// Write any remainder
+	if offset < len(b) {
+		result.Write(b[offset:])
+	}
+
+	_, err = c.Conn.Write(result.Bytes())
+	return len(b), err
 }
 
 func (c *h2Conn) processHeadersFrame(b []byte) ([]byte, error) {
