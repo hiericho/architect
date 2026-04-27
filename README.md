@@ -1,104 +1,83 @@
-# 🦎 Architect
+# 🏗️ Architect
 
-> **"The Friendly Neighborhood Network Engine"** ✨  
-> *Making advanced network fingerprinting as easy as pie!*
+**Architect** is a high-performance network orchestration engine designed for protocol research and client emulation. It provides surgical control over the network stack, enabling developers and security researchers to move beyond the rigid defaults of standard libraries.
 
-[![PyPI Version](https://img.shields.io/pypi/v/architect-net.svg?style=flat-square&color=blue)](https://pypi.org/project/architect-net/)
-[![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat-square&logo=go)](https://github.com/Hiericho/architect)
-[![Python Version](https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square&logo=python)](https://github.com/Hiericho/architect)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://github.com/Hiericho/architect/blob/main/LICENSE)
-
-Hello! **Architect** is a super-powered but friendly network engine. It helps you talk to the internet just like a real browser would. Under the hood, it does some very clever math to make your network signatures (like TLS and HTTP/2) look perfect, but it keeps things simple for you on the outside. 🍬
-
-Whether you're a security researcher, a developer, or just curious about how the web works, Architect is here to help you blend in! 🌈
+By separating the high-level API from a specialized Go sidecar, Architect allows for precise manipulation of TLS signatures, HTTP/2 frame structures, and TCP/IP parameters.
 
 ---
 
-## 🧐 How does it work?
+## 🔬 Core Capabilities
 
-Most libraries (like `requests`) are a bit "loud" and tell websites exactly who they are. Architect is like a talented actor—it can play the role of any browser (Chrome, Safari, and more!) by changing its "network costume" at every layer.
-
-### 🧩 The Magic Layers:
-*   **Layer 3 (Network):** Adjusts **TTL** and **TCP Window Size** to match your favorite OS.
-*   **Layer 4 (Transport):** Uses **uTLS** to create perfect **JA3/JA4** signatures. It even hides its destination using **Encrypted Client Hello (ECH)**! 🤫
-*   **Layer 7 (Application):** Perfectly orders **HTTP/2 Headers** so they look just like the real deal.
-*   **Memory:** Remembers **Cookies** and TLS sessions so you stay logged in and fast! 🍪
+*   **Layer 7 (Application):** Full control over HTTP/2 header normalization and frame ordering to match specific client specifications.
+*   **Layer 4 (Transport):** Native **uTLS** integration for accurate **JA3/JA4** fingerprinting and **Encrypted Client Hello (ECH)** testing.
+*   **Layer 3 (Network):** Granular adjustment of **TTL** and **TCP Window Size** for operating system emulation.
+*   **Persistence:** Built-in support for cookie-aware sessions and TLS session resumption.
 
 ---
 
-## 🚀 Why you'll love it:
+## 🚀 Technical Highlights
 
-- **⚡ Easy-Peasy:** Just `pip install`. We've already compiled the heavy Go engine for you!
-- **⚡ Super Fast:** Built with `Asyncio` to handle hundreds of tasks at once without breaking a sweat.
-- **🌐 All the Methods:** `GET`, `POST`, `PUT`, `DELETE`... you name it, we support it!
-- **📦 Smart JSON:** Responses come with a built-in `.json()` method for easy snack-sized data.
-- **🔄 Quick Change:** Swap browser identities in a heartbeat or make your own!
-- **🔌 Proxy Friendly:** Works beautifully with SOCKS5 and HTTP proxies to keep you moving.
+- **Zero-Dependency Core:** Pre-compiled Go binaries are bundled directly with the Python package.
+- **Asynchronous First:** Designed for high-scale concurrency using `Asyncio`.
+- **Method Compliance:** Full support for `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, and `OPTIONS`.
+- **Research Ready:** Real-time engine logs provide deep visibility into every protocol handshake.
+- **Flexible Proxying:** Robust support for SOCKS5 and HTTP proxies with isolated connection pooling.
 
 ---
 
-## 📦 Getting Started
+## 📦 Installation
 
-### Just the basics 💅
 ```bash
 pip install architect-net
 ```
 
-### For the builders 🏗️
-```bash
-# 1. Clone and build the sidecar
-python scripts/build_engine.py
-
-# 2. Install and start creating!
-pip install -e .
-```
-
 ---
 
-## 📖 Let's see it in action!
+## 📖 Implementation
 
-### 🐍 Simple Async Example
+### Asynchronous Client Emulation
 ```python
 import asyncio
 import architect
 
 async def main():
-    # Let's pretend we're on Chrome today! 🎩
+    # Emulate a specific client environment
     session = architect.AsyncSession(architect.CHROME_124)
     
-    # Send a friendly request
+    # Execute a request with precise protocol signatures
     response = await session.get("https://tls.peet.ws/api/all")
-    print(f"Success! Status: {response.status_code} 🎉")
     
-    # Grab our JA3 signature from the JSON
-    data = response.json()
-    print(f"Our secret JA3 code: {data['tls']['ja3_hash']}")
+    if response.status_code == 200:
+        data = response.json()
+        print(f"Verified JA3 Hash: {data['tls']['ja3_hash']}")
 
 if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### 🧬 Making your own "Costume" (Custom Profile)
+### Custom Protocol Profiling
+Architect allows you to define custom network parameters for granular testing:
+
 ```python
-# Create a custom Windows identity! 🪟
-MY_PROFILE = {
-    "ID": "custom_win_chrome",
-    "TLSID": 1,          # Matches Chrome's TLS fingerprint
-    "TTL": 128,          # Windows standard TTL
-    "TCPWindow": 65535,
+RESEARCH_PROFILE = {
+    "ID": "custom_research_node",
+    "TLSID": 1,          # Maps to internal TLS profiles
+    "TTL": 128,          # Define custom hop limits
+    "TCPWindow": 65535,  # Define initial window size
     "UserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)..."
 }
 
 async def run_test():
-    client = architect.AsyncClient(profile=MY_PROFILE)
+    # Use AsyncClient for non-session-based requests
+    client = architect.AsyncClient(profile=RESEARCH_PROFILE)
     response = await client.get("https://tls.peet.ws/api/all")
-    print("Everything looks great! ✅")
+    print(response.json())
 ```
 
 ---
 
-## 📜 Being a Good Neighbor (Disclaimer)
-Architect is for **authorized security testing and learning only**. We believe in keeping the internet safe and fun for everyone. Please use your new powers for good! 💖
+## 📜 Research Integrity
+This project is intended for **authorized security research, protocol analysis, and educational use**. Architect was built to help engineers understand network behavior and build more resilient systems. Users are responsible for ensuring their use of this tool complies with all relevant laws and ethical standards.
 
 ---
-*Made with ❤️ and integrity by Hiericho*
+*Maintained by Hiericho*
