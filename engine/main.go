@@ -7,17 +7,21 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/http/cookiejar"
 	"strings"
+	"sync"
 
 	"github.com/hiericho/architect"
 )
 
 type ProxyRequest struct {
+	SessionID string            `json:"session_id"` // Persistent session key
 	ProfileID string            `json:"profile_id"`
 	URL       string            `json:"url"`
 	Method    string            `json:"method"`
 	Headers   map[string]string `json:"headers"`
 	Body      string            `json:"body"`
+	Proxy     string            `json:"proxy"`
 }
 
 type ProxyResponse struct {
@@ -25,6 +29,54 @@ type ProxyResponse struct {
 	Body    string            `json:"body"`
 	Headers map[string]string `json:"headers"`
 	Error   string            `json:"error"`
+}
+
+// Session store to maintain cookies and clients across requests
+var (
+	sessions   = make(map[string]*http.Client)
+	sessionsMu sync.RWMutex
+)
+
+func getSessionClient(req ProxyRequest) *http.Client {
+	sessionsMu.Lock()
+	defer sessionsMu.Unlock()
+
+	// If no session ID, create a one-time client
+	if req.SessionID == "" {
+		tr := &architect.Transport{
+			DefaultProfile:     getProfile(req.ProfileID),
+			ProxyURL:           req.Proxy,
+			InsecureSkipVerify: true,
+		}
+		return &http.Client{Transport: tr}
+	}
+
+	if client, ok := sessions[req.SessionID]; ok {
+		return client
+	}
+
+	// Create new persistent session
+	jar, _ := cookiejar.New(nil)
+	tr := &architect.Transport{
+		DefaultProfile:     getProfile(req.ProfileID),
+		ProxyURL:           req.Proxy,
+		InsecureSkipVerify: true,
+	}
+	client := &http.Client{
+		Transport: tr,
+		Jar:       jar,
+	}
+	sessions[req.SessionID] = client
+	return client
+}
+
+func getProfile(id string) architect.Profile {
+	switch id {
+	case "safari_17_ios":
+		return architect.Safari17iOS
+	default:
+		return architect.Chrome124
+	}
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -39,16 +91,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Choose profile
-	var profile architect.Profile
-	switch req.ProfileID {
-	case "safari_17_ios":
-		profile = architect.Safari17iOS
-	default:
-		profile = architect.Chrome124
-	}
-
-	client := architect.NewClient(profile)
+	client := getSessionClient(req)
 	hReq, err := http.NewRequest(req.Method, req.URL, strings.NewReader(req.Body))
 	if err != nil {
 		sendError(w, err)
