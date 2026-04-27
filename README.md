@@ -31,6 +31,7 @@ Standard networking libraries (like Python's `requests` or Go's `net/http`) are 
 
 - **⚡ Zero-Friction User Experience:** Just `pip install`. Pre-compiled binaries for Windows, Linux, and macOS are bundled in the wheel.
 - **⚡ Asyncio Native:** Designed for high-scale concurrency with `AsyncClient` and `AsyncSession`.
+- **🌐 Full HTTP Method Support:** Effortlessly execute `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, and `OPTIONS` requests.
 - **🔄 Identity Rotation:** Switch fingerprints (Chrome, Safari, etc.) or inject custom profiles on the fly.
 - **🔌 Proxy Dominance:** Full SOCKS5 and HTTP proxy support with isolated connection pools.
 - **🔍 Deep Visibility:** Stream real-time engine logs to see exactly how handshakes are performing.
@@ -87,7 +88,7 @@ Define your own identity in pure Python—no Go recompilation needed:
 ```python
 MY_IDENTITY = {
     "ID": "custom_m1_mac",
-    "TLSID": 1,          # Chrome-based uTLS
+    "TLSID": {"Client": "Chrome", "Version": "120"}, # Chrome-based uTLS
     "TTL": 64,           # MacOS TTL
     "TCPWindow": 64240,  # MacOS Window Size
     "UserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)..."

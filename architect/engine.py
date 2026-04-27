@@ -14,7 +14,7 @@ import uuid
 CHROME_124 = {
     "ID": "chrome_124_macos",
     "Name": "Chrome 124 MacOS",
-    "TLSID": 1,
+    "TLSID": {"Client": "Chrome", "Version": "120"},
     "InitialWinSize": 6291456,
     "TTL": 64,
     "TCPWindow": 64240,
@@ -25,7 +25,7 @@ CHROME_124 = {
 SAFARI_17 = {
     "ID": "safari_17_ios",
     "Name": "Safari 17 on iOS",
-    "TLSID": 3,
+    "TLSID": {"Client": "Safari", "Version": "16"},
     "InitialWinSize": 2097152,
     "TTL": 64,
     "TCPWindow": 65535,
@@ -120,6 +120,27 @@ class Client(BaseClient):
     def get(self, url, headers=None):
         return self._request("GET", url, None, headers)
 
+    def post(self, url, data=None, json_data=None, headers=None):
+        body = json_data if json_data else data
+        return self._request("POST", url, body, headers)
+
+    def put(self, url, data=None, json_data=None, headers=None):
+        body = json_data if json_data else data
+        return self._request("PUT", url, body, headers)
+
+    def delete(self, url, headers=None):
+        return self._request("DELETE", url, None, headers)
+
+    def patch(self, url, data=None, json_data=None, headers=None):
+        body = json_data if json_data else data
+        return self._request("PATCH", url, body, headers)
+
+    def head(self, url, headers=None):
+        return self._request("HEAD", url, None, headers)
+
+    def options(self, url, headers=None):
+        return self._request("OPTIONS", url, None, headers)
+
     def _request(self, method, url, body, headers):
         payload = self._prepare_payload(method, url, body, headers)
         r = requests.post(f"http://127.0.0.1:{BaseClient._port}/", json=payload, timeout=60)
@@ -128,6 +149,27 @@ class Client(BaseClient):
 class AsyncClient(BaseClient):
     async def get(self, url, headers=None):
         return await self._request("GET", url, None, headers)
+
+    async def post(self, url, data=None, json_data=None, headers=None):
+        body = json_data if json_data else data
+        return await self._request("POST", url, body, headers)
+
+    async def put(self, url, data=None, json_data=None, headers=None):
+        body = json_data if json_data else data
+        return await self._request("PUT", url, body, headers)
+
+    async def delete(self, url, headers=None):
+        return await self._request("DELETE", url, None, headers)
+
+    async def patch(self, url, data=None, json_data=None, headers=None):
+        body = json_data if json_data else data
+        return await self._request("PATCH", url, body, headers)
+
+    async def head(self, url, headers=None):
+        return await self._request("HEAD", url, None, headers)
+
+    async def options(self, url, headers=None):
+        return await self._request("OPTIONS", url, None, headers)
 
     async def _request(self, method, url, body, headers):
         payload = self._prepare_payload(method, url, body, headers)
