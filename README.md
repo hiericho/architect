@@ -1,42 +1,88 @@
 # Architect
 
-Architect is a low-level network engine designed for perfect browser fingerprint emulation. It bypasses enterprise-grade WAFs (Cloudflare, Akamai, Datadome) by surgically manipulating the network stack across multiple layers.
+> A low-level network engine for precise browser fingerprint emulation.
 
-## Features
+Architect surgically manipulates the network stack across multiple layers to produce TLS signatures, HTTP/2 frames, and header ordering that are indistinguishable from real browsers — enabling it to pass inspection by enterprise-grade WAFs such as Cloudflare, Akamai, and DataDome.
 
-- **Layer 3/4 (Network/Transport)**: TCP TTL normalization and uTLS integration for perfect JA3/JA4 signatures.
-- **Layer 4 (Security)**: Automated **Encrypted Client Hello (ECH)** resolution via DNS-over-HTTPS (DoH).
-- **Layer 7 (Application)**: Full control over HTTP/2 SETTINGS frames and header ordering.
-- **Python Integration**: Clean Python API that manages a high-performance Go engine in the background.
+---
 
-## Quick Start (Python)
+## How It Works
+
+Architect operates at three distinct layers of the network stack:
+
+| Layer | Scope | What Architect Does |
+|---|---|---|
+| **L3/L4 — Network/Transport** | TCP + TLS | TTL normalization and uTLS integration for accurate JA3/JA4 signatures |
+| **L4 — Security** | TLS Handshake | Automated Encrypted Client Hello (ECH) resolution via DNS-over-HTTPS (DoH) |
+| **L7 — Application** | HTTP/2 | Full control over SETTINGS frames and header ordering |
+
+A high-performance Go engine handles all low-level work. A clean Python API sits on top for easy integration.
+
+---
+
+## Installation
+
+### 1. Build the Go Engine
+
+```bash
+go build -o architect/bin/architect_win_amd64.exe ./engine/main.go
+```
+
+### 2. Install the Python Package
+
+```bash
+pip install -e .
+```
+
+> **Requirements:** Go 1.21+ and Python 3.9+
+
+---
+
+## Usage
+
+### Python
 
 ```python
 import architect
 
-# Identity rotation without restarting
 client = architect.Client(architect.CHROME_124)
 response = client.get("https://tls.peet.ws/api/all")
-
-print(f"Bypassed: {response.status_code}")
+print(response.status_code)  # 200
 ```
 
-## Low-Level Access (Go)
+Browser identities can be rotated at runtime without restarting the engine.
+
+### Go
 
 ```go
 import "github.com/hiericho/architect"
 
 client := architect.NewClient(architect.Chrome124)
-resp, _ := client.Get("https://target.com")
+resp, err := client.Get("https://tls.peet.ws/api/all")
 ```
 
-## Installation
+---
 
-1. **Build the Engine**:
-   `go build -o architect/bin/architect_win_amd64.exe ./engine/main.go`
-   
-2. **Install Python Package**:
-   `pip install -e .`
+## Supported Profiles
+
+- `CHROME_124` / `Chrome124`
+- *(additional profiles go here)*
+
+---
+
+## Project Structure
+
+```
+architect/
+├── engine/         # Go network engine
+│   └── main.go
+├── architect/      # Python bindings
+│   └── bin/        # Compiled engine binaries
+└── README.md
+```
+
+---
 
 ## Disclaimer
-Architect is for educational and authorized security testing purposes only.
+
+Architect is intended for **educational use and authorized security testing only**. Do not use it against systems you do not own or have explicit permission to test. The authors assume no liability for misuse.
