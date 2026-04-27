@@ -1,18 +1,18 @@
-# Binaries
+# Binaries & Compiled Files
 *.exe
 *.dll
 *.so
 *.dylib
-architect/architect_proxy.exe
-architect/architect_proxy
+architect/bin/
 main.exe
+architect_proxy.exe
 
 # Go
 vendor/
-go.sum
 *.test
+*.prof
 
-# Python
+# Python / Packaging
 __pycache__/
 *.py[cod]
 *$py.class
@@ -22,7 +22,15 @@ build/
 .venv/
 venv/
 .env
+.pypirc
 
-# OS
+# OS & IDE
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Project Specific
+architect_net.egg-info/

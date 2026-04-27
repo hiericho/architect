@@ -3,73 +3,94 @@
 > **"The Stealthy Network Chameleon"** 🦎  
 > *Surgical network fingerprinting for the modern web.*
 
-[![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat-square&logo=go)](https://go.dev/)
-[![Python Version](https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square&logo=python)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat-square&logo=go)](https://github.com/Hiericho/architect)
+[![Python Version](https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square&logo=python)](https://github.com/Hiericho/architect)
+[![Asyncio Support](https://img.shields.io/badge/Asyncio-Supported-663399?style=flat-square&logo=python)](https://github.com/Hiericho/architect)
+[![PyPI Version](https://img.shields.io/pypi/v/architect-net.svg?style=flat-square)](https://pypi.org/project/architect-net/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://github.com/Hiericho/architect/blob/main/LICENSE)
 
-**Architect** is a low-level network engine that helps you blend in. It surgically manipulates your network stack across multiple layers to produce TLS signatures, HTTP/2 frames, and header ordering that are indistinguishable from real browsers.
+**Architect** is an elite low-level network engine designed to blend in perfectly. It surgically manipulates your network stack across every layer to produce TLS signatures, HTTP/2 frames, and TCP signatures that are indistinguishable from real browsers.
 
-Say goodbye to "Access Denied" from Cloudflare, Akamai, and DataDome. 🛡️✨
-
----
-
-## 🛠️ How the Magic Happens
-
-Architect handles the heavy lifting at three critical layers of the stack:
-
-| Layer | Scope | The Architect Touch |
-| :--- | :--- | :--- |
-| **L3/L4** | **TCP + TLS** | 🦎 **Cloaking:** TTL normalization & uTLS for perfect JA3/JA4 signatures. |
-| **L4** | **Security** | 🔐 **Secret Handshake:** Automated Encrypted Client Hello (ECH) via DoH. |
-| **L7** | **Application** | ✉️ **Perfect Delivery:** Full control over H2 SETTINGS & Header ordering. |
-
-A high-performance **Go engine** handles the surgical precision, while a **clean Python API** keeps your code looking beautiful. 💅
+Bypass enterprise-grade WAFs like **Cloudflare, Akamai, and DataDome** with ease. 🛡️✨
 
 ---
 
-## 🚀 Getting Started
+## 🧐 Why Architect?
+
+Standard networking libraries (like Python's `requests` or Go's `net/http`) are easily flagged because they leave "digital fingerprints" at every layer. Architect wipes those fingerprints clean.
+
+### 🦎 The Stealth Stack:
+*   **Layer 3 (Network):** Spoofs **TTL** and **TCP Window Size** to match specific Operating Systems.
+*   **Layer 4 (Transport):** Uses **uTLS** for perfect **JA3/JA4** signatures and **Encrypted Client Hello (ECH)** to hide SNI.
+*   **Layer 7 (Application):** Wire-level **HTTP/2 Header Ordering** and frame manipulation to match browser behavior.
+*   **Behavioral:** Full **Cookie Session** persistence and TLS session resumption.
+
+---
+
+## 🚀 Key Features
+
+- **⚡ High Performance:** Go-powered sidecar engine for surgical precision.
+- **🔄 Identity Rotation:** Switch fingerprints (Chrome, Safari, etc.) without restarting.
+- **🔌 Proxy Dominance:** Full SOCKS5 and HTTP proxy support with session isolation.
+- **⚡ Asyncio Native:** Designed for high-scale concurrency in Python.
+- **🔍 Deep Visibility:** Stream real-time engine logs to see exactly how handshakes are performing.
+
+---
+
+## 📦 Installation
 
 ### 1. Build the Engine 🏗️
-Architect uses a background proxy to do the heavy lifting. Compile it for your platform:
+Architect requires the Go sidecar to be compiled for your platform:
 
 ```bash
-# Windows
-go build -o architect/bin/architect_win_amd64.exe ./engine/main.go
-
-# Linux
-go build -o architect/bin/architect_linux_amd64 ./engine/main.go
+# Cross-compiles for Windows, Linux, and macOS automatically
+python build.py
 ```
 
 ### 2. Install Python Package 🐍
 ```bash
-pip install -e .
+pip install architect-net
 ```
 
 ---
 
 ## 📖 Usage Examples
 
-### 🐍 Python (Simple & Sweet)
+### 🐍 Basic Async Session
 ```python
+import asyncio
 import architect
 
-# Just pick a profile and go! 
-client = architect.Client(architect.CHROME_124)
+async def main():
+    # Maintains cookies & TLS state automatically!
+    session = architect.AsyncSession(architect.CHROME_124)
+    
+    # 🦎 Perfect emulation through a residential proxy
+    session.proxy = "socks5://user:pass@p.proxy.net:8000"
+    
+    response = await session.get("https://tls.peet.ws/api/all")
+    print(f"Bypassed! Status: {response.status_code} 🎉")
+    
+    # Peek at the digital wire:
+    for log in session.get_logs():
+        print(f"[ENGINE]: {log}")
 
-# Architect handles the background engine lifecycle automatically ✨
-response = client.get("https://tls.peet.ws/api/all")
-
-print(f"Status: {response.status_code} - We are in! 🎉")
+asyncio.run(main())
 ```
 
-### 🐹 Go (Pure Performance)
-```go
-import "github.com/hiericho/architect"
+### 🧬 Dynamic Custom Profiles
+No need to recompile the Go engine. Define your own identity in pure Python:
 
-func main() {
-    client := architect.NewClient(architect.Chrome124)
-    resp, _ := client.Get("https://tls.peet.ws/api/all")
+```python
+MY_IDENTITY = {
+    "ID": "custom_m1_mac",
+    "TLSID": 1,          # Chrome-based uTLS
+    "TTL": 64,           # MacOS TTL
+    "TCPWindow": 64240,  # MacOS Window Size
+    "UserAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)..."
 }
+
+client = architect.Client(profile=MY_IDENTITY)
 ```
 
 ---
@@ -80,8 +101,9 @@ func main() {
 architect/
 ├── engine/         # ⚙️ Go Proxy Engine (The Brains)
 ├── architect/      # 🐍 Python Package (The Beauty)
-│   └── bin/        # 📦 Compiled Binaries
-├── core/           # 🧩 Go Library Logic
+│   └── bin/        # 📦 Cross-compiled Engine Binaries
+├── core/           # 🧩 Low-level protocol logic
+├── build.py        # 🏗️ Build automation
 └── README.md       # 📖 You are here!
 ```
 

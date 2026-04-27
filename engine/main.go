@@ -15,8 +15,8 @@ import (
 )
 
 type ProxyRequest struct {
-	SessionID string            `json:"session_id"` // Persistent session key
-	ProfileID string            `json:"profile_id"`
+	SessionID string            `json:"session_id"`
+	Profile   architect.Profile `json:"profile"`
 	URL       string            `json:"url"`
 	Method    string            `json:"method"`
 	Headers   map[string]string `json:"headers"`
@@ -31,20 +31,37 @@ type ProxyResponse struct {
 	Error   string            `json:"error"`
 }
 
-// Session store to maintain cookies and clients across requests
 var (
 	sessions   = make(map[string]*http.Client)
 	sessionsMu sync.RWMutex
+	logBuffer  []string
+	logMu      sync.Mutex
 )
+
+// Custom logger to capture engine events
+func engineLog(format string, v ...interface{}) {
+	msg := fmt.Sprintf(format, v...)
+	logMu.Lock()
+	logBuffer = append(logBuffer, msg)
+	if len(logBuffer) > 100 { // Keep last 100 logs
+		logBuffer = logBuffer[1:]
+	}
+	logMu.Unlock()
+	log.Println(msg)
+}
 
 func getSessionClient(req ProxyRequest) *http.Client {
 	sessionsMu.Lock()
 	defer sessionsMu.Unlock()
 
-	// If no session ID, create a one-time client
+	profile := req.Profile
+	if profile.ID == "" {
+		profile = architect.Chrome124
+	}
+
 	if req.SessionID == "" {
 		tr := &architect.Transport{
-			DefaultProfile:     getProfile(req.ProfileID),
+			DefaultProfile:     profile,
 			ProxyURL:           req.Proxy,
 			InsecureSkipVerify: true,
 		}
@@ -55,10 +72,9 @@ func getSessionClient(req ProxyRequest) *http.Client {
 		return client
 	}
 
-	// Create new persistent session
 	jar, _ := cookiejar.New(nil)
 	tr := &architect.Transport{
-		DefaultProfile:     getProfile(req.ProfileID),
+		DefaultProfile:     profile,
 		ProxyURL:           req.Proxy,
 		InsecureSkipVerify: true,
 	}
@@ -67,19 +83,19 @@ func getSessionClient(req ProxyRequest) *http.Client {
 		Jar:       jar,
 	}
 	sessions[req.SessionID] = client
+	engineLog("Created persistent session: %s", req.SessionID)
 	return client
 }
 
-func getProfile(id string) architect.Profile {
-	switch id {
-	case "safari_17_ios":
-		return architect.Safari17iOS
-	default:
-		return architect.Chrome124
-	}
-}
-
 func handler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "/logs" {
+		logMu.Lock()
+		json.NewEncoder(w).Encode(logBuffer)
+		logBuffer = []string{} // Clear after read
+		logMu.Unlock()
+		return
+	}
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -90,6 +106,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	engineLog("Request: %s %s [Profile: %s]", req.Method, req.URL, req.Profile.Name)
 
 	client := getSessionClient(req)
 	hReq, err := http.NewRequest(req.Method, req.URL, strings.NewReader(req.Body))
@@ -104,6 +122,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := client.Do(hReq)
 	if err != nil {
+		engineLog("Error: %v", err)
 		sendError(w, err)
 		return
 	}
