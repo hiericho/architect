@@ -39,6 +39,16 @@ class Response:
         self.text = data.get("body")
         self.headers = data.get("headers")
         self.error = data.get("error")
+        self._json = None
+        if self.text:
+            try:
+                self._json = json.loads(self.text)
+            except:
+                pass
+
+    def json(self):
+        """Returns the parsed JSON body of the response."""
+        return self._json
 
 class BaseClient:
     _proxy_process = None
