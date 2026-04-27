@@ -25,7 +25,7 @@ CHROME_124 = {
 SAFARI_17 = {
     "ID": "safari_17_ios",
     "Name": "Safari 17 on iOS",
-    "TLSID": {"Client": "Safari", "Version": "16"},
+    "TLSID": {"Client": "Safari", "Version": "16.0"},
     "InitialWinSize": 2097152,
     "TTL": 64,
     "TCPWindow": 65535,
