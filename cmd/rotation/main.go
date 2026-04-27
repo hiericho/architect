@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/hiericho/architect"
+	"github.com/hiericho/architect/core"
 )
 
 func main() {

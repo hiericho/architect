@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/hiericho/architect"
+	"github.com/hiericho/architect/core"
 )
 
 type ProxyRequest struct {

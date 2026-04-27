@@ -4,16 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "architect-net"
-version = "1.1.1"
+version = "1.1.3"
 authors = [
   { name="Hiericho", email="hierichovieytes@gmail.com" },
 ]
 description = "Surgical network fingerprinting evasion engine"
 readme = "README.md"
+license = {text = "MIT"}
 requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Internet :: WWW/HTTP",
     "Development Status :: 4 - Beta",

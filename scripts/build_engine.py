@@ -13,7 +13,8 @@ TARGETS = [
 ]
 
 def main():
-    root_dir = os.path.dirname(os.path.abspath(__file__))
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    root_dir = os.path.dirname(script_dir)
     engine_dir = os.path.join(root_dir, "engine")
     bin_dir = os.path.join(root_dir, "architect", "bin")
 

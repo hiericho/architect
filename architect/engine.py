@@ -61,9 +61,20 @@ class BaseClient:
     def _ensure_engine_running(self):
         if BaseClient._proxy_process is None:
             BaseClient._port = self._get_free_port()
+            
             ext = ".exe" if os.name == "nt" else ""
             system = platform.system().lower()
-            bin_name = f"architect_{system}_amd64{ext}"
+            
+            # Professional Architecture Detection
+            machine = platform.machine().lower()
+            if machine in ["amd64", "x86_64"]:
+                arch = "amd64"
+            elif machine in ["arm64", "aarch64"]:
+                arch = "arm64"
+            else:
+                arch = machine # Fallback
+            
+            bin_name = f"architect_{system}_{arch}{ext}"
             bin_path = os.path.join(os.path.dirname(__file__), "bin", bin_name)
             
             if not os.path.exists(bin_path):
