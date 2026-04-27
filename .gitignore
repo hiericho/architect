@@ -11,18 +11,44 @@ architect_proxy.exe
 vendor/
 *.test
 *.prof
+go.work
 
 # Python / Packaging
 __pycache__/
 *.py[cod]
 *$py.class
-dist/
+*.so
+.Python
+env/
 build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
 *.egg-info/
-.venv/
-venv/
+.installed.cfg
+*.egg
 .env
-.pypirc
+.venv
+venv/
+ENV/
+
+# Testing & Coverage
+.target/
+.pytest_cache/
+.coverage
+.coverage.*
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
 
 # OS & IDE
 .DS_Store
@@ -31,6 +57,9 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+*.sublime-project
+*.sublime-workspace
 
 # Project Specific
 architect_net.egg-info/
+*.log
